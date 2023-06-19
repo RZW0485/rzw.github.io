@@ -1,30 +1,32 @@
 package Design.dbutils.UserDao;
 
 import Design.dbutils.JDBC.DBHelper;
+import Design.dbutils.UDNI.PowerBank;
 import Design.dbutils.UDNI.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-public class UserDaoImp1 implements UserDao{
+public class UserDaoImp1 implements UserDao {
 
     @Override
     public User findUserbyId(String id) {
-        if(id == null){
-            return  null;
+        if (id == null) {
+            return null;
         }
-       Connection conn = DBHelper.getConn();
+        Connection conn = DBHelper.getConn();
         String sql = "SELECT * FROM  design.user where id = ?;";
         PreparedStatement stat = null;
         ResultSet rs = null;
         User u = new User();
         try {
             stat = conn.prepareStatement(sql);
-            stat.setString(1,id);
+            stat.setString(1, id);
             rs = stat.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 u.setId(String.valueOf(rs.getString("id")));
                 u.setName(rs.getString("name"));
                 u.setPassword(rs.getString("password"));
@@ -32,21 +34,21 @@ public class UserDaoImp1 implements UserDao{
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            DBHelper.closeAll(conn,stat,rs);
+        } finally {
+            DBHelper.closeAll(conn, stat, rs);
         }
-if(u.getId().equals("")){
-    return null;
-}else {
-    return u;
-}
+        if (u.getId().equals("")) {
+            return null;
+        } else {
+            return u;
+        }
     }
 
     @Override
 
-   public void creatNewUser() {
+    public void creatNewUser() {
         Connection conn = DBHelper.getConn();
-        String  sql  = "INSERT  design.user(id,name,password,balance) VALUE(null,null,null,null);";
+        String sql = "INSERT  design.user(id,name,password,balance) VALUE(null,null,null,null);";
         PreparedStatement stat = null;
         ResultSet rs = null;
         try {
@@ -55,7 +57,7 @@ if(u.getId().equals("")){
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            DBHelper.closeAll(conn,stat,rs);
+            DBHelper.closeAll(conn, stat, rs);
         }
     }
 
@@ -66,35 +68,35 @@ if(u.getId().equals("")){
         PreparedStatement stat = null;
         ResultSet rs = null;
         try {
-            stat =conn.prepareStatement(sql);
-            stat.setString(1,id);
-            stat.setInt(2,serialNum);
+            stat = conn.prepareStatement(sql);
+            stat.setString(1, id);
+            stat.setInt(2, serialNum);
             stat.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            DBHelper.closeAll(conn,stat,rs);
+            DBHelper.closeAll(conn, stat, rs);
         }
 
     }
 
     @Override
     public void updataUser(User user) {
-       Connection coon = DBHelper.getConn();
+        Connection coon = DBHelper.getConn();
         String sql = "UPDATE design.user SET name=?,password=?,balance=? WHERE id=?";
         PreparedStatement stat = null;
         ResultSet rs = null;
         try {
             stat = coon.prepareStatement(sql);
-            stat.setString(1,user.getName());
+            stat.setString(1, user.getName());
             stat.setString(2, user.getPassword());
-            stat.setDouble(3,user.getBalance());
-            stat.setString(4,user.getId());
+            stat.setDouble(3, user.getBalance());
+            stat.setString(4, user.getId());
             stat.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            DBHelper.closeAll(coon,stat,rs);
+            DBHelper.closeAll(coon, stat, rs);
         }
 
 
@@ -110,19 +112,20 @@ if(u.getId().equals("")){
         try {
             stat = conn.prepareStatement(sql);
             rs = stat.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 serialNum = rs.getInt("serialnum");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            DBHelper.closeAll(conn,stat,rs);
+        } finally {
+            DBHelper.closeAll(conn, stat, rs);
         }
         return serialNum;
     }
+
     public User findUserbyName(String name) {
-        if(name == null){
-            return  null;
+        if (name == null) {
+            return null;
         }
         Connection conn = DBHelper.getConn();
         String sql = "SELECT * FROM  design.user where name =?;";
@@ -131,22 +134,65 @@ if(u.getId().equals("")){
         User u = new User();
         try {
             stat = conn.prepareStatement(sql);
-            stat.setString(1,name);
+            stat.setString(1, name);
             rs = stat.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 u.setId(rs.getString("id"));
                 u.setName(rs.getString("name"));
                 u.setPassword(rs.getString("password"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
-            DBHelper.closeAll(conn,stat,rs);
+        } finally {
+            DBHelper.closeAll(conn, stat, rs);
         }
-        if(u.getName().equals("")){
+        if (u.getName().equals("")) {
             return null;
-        }else {
+        } else {
             return u;
         }
     }
+
+    //查询全部用户信息
+    public ArrayList<PowerBank> findUser() {
+        ArrayList<PowerBank> powerList = new ArrayList<>();
+        Connection conn = DBHelper.getConn();
+        String sql = "SELECT * FROM  design.user ";
+        PreparedStatement stat = null;
+        ResultSet rs = null;
+        try {
+            stat = conn.prepareStatement(sql);
+            rs = stat.executeQuery();
+            while (rs.next()) {
+                String id = rs.getString("id");
+                String name = rs.getString("name");
+                String password = rs.getString("password");
+                double balance = rs.getDouble("balance");
+                String dob = String.valueOf(balance);
+                powerList.add(new PowerBank(id, name, password, dob));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBHelper.closeAll(conn, stat, rs);
+        }
+        return powerList;
+    }
+
+    //删除用户
+    public void delect(String id) {
+        Connection conn = DBHelper.getConn();
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = conn.prepareStatement("delete from design.user where id = ?");
+            preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            DBHelper.closeAll(conn, preparedStatement, null);
+        }
+
+    }
+
 }

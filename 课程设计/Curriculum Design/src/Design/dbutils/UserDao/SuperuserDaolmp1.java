@@ -27,7 +27,7 @@ public class SuperuserDaolmp1 implements UserDao{
                 u.setId(String.valueOf(rs.getString("id")));
                 u.setName(rs.getString("name"));
                 u.setPassword(rs.getString("password"));
-                u.setBalance(rs.getDouble("balance"));
+                u.setEmail(rs.getString("email"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +45,7 @@ public class SuperuserDaolmp1 implements UserDao{
 
     public void creatNewUser() {
         Connection conn = DBHelper.getConn();
-        String  sql  = "INSERT  design.superuser(id,name,password,balance) VALUE(null,null,null,null);";
+        String  sql  = "INSERT  design.superuser(id,name,password,email) VALUE(null,null,null,null);";
         PreparedStatement stat = null;
         ResultSet rs = null;
         try {
@@ -80,14 +80,14 @@ public class SuperuserDaolmp1 implements UserDao{
     @Override
     public void updataUser(User user) {
         Connection coon = DBHelper.getConn();
-        String sql = "UPDATE design.superuser SET name=?,password=?,balance=? WHERE id=?";
+        String sql = "UPDATE design.superuser SET name=?,password=?,email =? WHERE id=?";
         PreparedStatement stat = null;
         ResultSet rs = null;
         try {
             stat = coon.prepareStatement(sql);
             stat.setString(1,user.getName());
             stat.setString(2, user.getPassword());
-            stat.setDouble(3,user.getBalance());
+            stat.setString(3,user.getEmail());
             stat.setString(4,user.getId());
             stat.executeUpdate();
         } catch (SQLException e) {
@@ -147,5 +147,20 @@ public class SuperuserDaolmp1 implements UserDao{
         }else {
             return u;
         }
+    }
+    //删除用户
+    public void delect(String id) {
+        Connection conn = DBHelper.getConn();
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = conn.prepareStatement("delete from design.superuser where id = ?");
+            preparedStatement.setString(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            DBHelper.closeAll(conn, preparedStatement, null);
+        }
+
     }
 }

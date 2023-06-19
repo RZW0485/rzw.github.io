@@ -1,5 +1,6 @@
 package Design.dbutils.Jform;
 
+import Design.dbutils.Jform.GLY.MainFrame;
 import Design.dbutils.UDNI.User;
 import Design.dbutils.UserDao.SuperuserDaolmp1;
 import Design.dbutils.UserDao.UserDaoImp1;
@@ -128,6 +129,7 @@ public class LoginSystem extends JFrame {
                         if (user != null && password.equals(user.getPassword())) {
                             //弹出普通用户界面
                             new PowerBankRentalSystemGUI(user);
+                            dispose();
 
                         } else {
                             JOptionPane.showMessageDialog(null, "账号或密码错误，请重新输入！");
@@ -137,7 +139,8 @@ public class LoginSystem extends JFrame {
                         User user = sudi.findUserbyId(userId);
                         if (user != null && password.equals(user.getPassword())) {
                             //弹出管理员用户界面
-                            JOptionPane.showMessageDialog(null, "管理员测试界面！");
+                           new MainFrame(user);
+                           dispose();
 
                         } else {
                             JOptionPane.showMessageDialog(null, "账号或密码错误，请重新输入！");
